@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Manager Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        .order-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-ready {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-assigned {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+        .driver-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .modal-header {
+            background-color: #f8f9fa;
+        }
+        .driver-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .driver-card:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        .driver-card.selected {
+            border-color: #667eea;
+            background-color: #e7e9ff;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar">
+            <div class="text-center mb-4">
+                <i class="fas fa-truck-moving fa-3x mb-3"></i>
+                <h5>Delivery Manager</h5>
+                <small th:text="${managerName}">John Doe</small>
+            </div>
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="#" data-section="pending-orders">
+                    <i class="fas fa-clock me-2"></i> Pending Orders
+                </a>
+                <a class="nav-link" href="#" data-section="schedule-delivery">
+                    <i class="fas fa-calendar-alt me-2"></i> Schedule Delivery
+                </a>
+                <a class="nav-link" href="#" data-section="track-deliveries">
+                    <i class="fas fa-map-marked-alt me-2"></i> Track Deliveries
+                </a>
+                <a class="nav-link" href="#" data-section="manage-drivers">
+                    <i class="fas fa-users me-2"></i> Manage Drivers
+                </a>
+                <hr class="my-3">
+                <a class="nav-link" th:href="@{/logout}">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-4">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Delivery Dashboard</h2>
+                    <p class="text-muted mb-0">Manage orders and drivers efficiently</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Last Updated: <span id="lastUpdated" th:text="${#dates.format(lastUpdated, 'HH:mm:ss')}">10:30:45</span></small>
+                </div>
+            </div>
+
+            <!-- Pending Orders Section (UC-D1) -->
+            <div id="pending-orders-section" class="content-section">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-clock me-2"></i>Pending Delivery Orders</span>
+                        <button class="btn btn-sm btn-primary" onclick="refreshOrders()">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6" th:each="order : ${pendingOrders}">
+                                <div class="card order-card" th:onclick="'openOrderDetails(' + ${order.id} + ')'">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">Order #<span th:text="${order.orderNumber}">ORD-2024-001</span></h6>
+                                                <small class="text-muted" th:text="${order.customerName}">Jane Smith</small>
+                                            </div>
+                                            <span class="status-badge status-ready" th:text="${order.status}">Ready</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                            <small th:text="${order.deliveryAddress}">123 Main St, City</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>
+                                                <span th:text="${order.deliveryWindow}">10:00 AM - 2:00 PM</span>
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="fas fa-weight me-1"></i>
+                                                <span th:text="${order.weight}">2.5</span> kg
+                                            </small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <button class="btn btn-sm btn-primary" th:onclick="'assignDriver(' + ${order.id} + ')'">
+                                                <i class="fas fa-user-plus me-1"></i> Assign Driver
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No Orders Message -->
+                        <div th:if="${#lists.isEmpty(pendingOrders)}" class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No pending orders at the moment</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Delivery Section (UC-D2) -->
+            <div id="schedule-delivery-section" class="content-section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-calendar-alt me-2"></i>Schedule Delivery Times
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6>Unscheduled Orders</h6>
+                                <div class="list-group">
+                                    <div class="list-group-item" th:each="order : ${unscheduledOrders}">
+                                        <div class="d-flex justify-content-between">
+                                            <span th:text="${order.orderNumber}">ORD-001</span>
+                                            <button class="btn btn-sm btn-outline-primary" th:onclick="'scheduleOrder(' + ${order.id} + ')'">
+                                                Schedule
+                                            </button>
+                                        </div>
+                                        <small class="text-muted" th:text="${order.customerName}">Customer</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h6>Delivery Schedule</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>Time Slot</th>
+                                            <th>Driver</th>
+                                            <th>Orders</th>
+                                            <th>Capacity</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="slot : ${timeSlots}">
+                                            <td th:text="${slot.timeRange}">09:00 - 12:00</td>
+                                            <td th:text="${slot.driverName}">Driver Name</td>
+                                            <td th:text="${slot.orderCount}">3</td>
+                                            <td>
+                                                <div class="progress">
+                                                    <div class="progress-bar" th:style="'width: ' + ${slot.capacityPercent} + '%'"
+                                                         th:text="${slot.capacityPercent} + '%'">60%</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Track Deliveries Section (UC-D3) -->
+            <div id="track-deliveries-section" class="content-section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-map-marked-alt me-2"></i>Track Active Deliveries
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Driver</th>
+                                    <th>Customer</th>
+                                    <th>Status</th>
+                                    <th>ETA</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="delivery : ${activeDeliveries}">
+                                    <td th:text="${delivery.orderNumber}">ORD-001</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="driver-avatar me-2" th:text="${delivery.driverInitials}">JD</div>
+                                            <span th:text="${delivery.driverName}">John Doe</span>
+                                        </div>
+                                    </td>
+                                    <td th:text="${delivery.customerName}">Customer</td>
+                                    <td>
+                                        <span class="status-badge" th:classappend="${delivery.statusClass}" th:text="${delivery.status}">In Transit</span>
+                                    </td>
+                                    <td th:text="${delivery.eta}">2:30 PM</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" th:onclick="'updateStatus(' + ${delivery.id} + ')'">
+                                            <i class="fas fa-edit"></i> Update
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Drivers Section (UC-D4) -->
+            <div id="manage-drivers-section" class="content-section" style="display:none;">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-users me-2"></i>Manage Drivers</span>
+                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addDriverModal">
+                            <i class="fas fa-plus me-1"></i> Add Driver
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Driver</th>
+                                    <th>Contact</th>
+                                    <th>Vehicle</th>
+                                    <th>Service Area</th>
+                                    <th>Status</th>
+                                    <th>Active Deliveries</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="driver : ${drivers}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="driver-avatar me-2" th:text="${driver.initials}">JD</div>
+                                            <span th:text="${driver.name}">John Doe</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div><i class="fas fa-phone me-1"></i><span th:text="${driver.phone}">555-0123</span></div>
+                                        <div><i class="fas fa-envelope me-1"></i><small th:text="${driver.email}">email@example.com</small></div>
+                                    </td>
+                                    <td th:text="${driver.vehicle}">Van - ABC123</td>
+                                    <td th:text="${driver.serviceArea}">North District</td>
+                                    <td>
+                                                <span class="badge" th:classappend="${driver.available ? 'bg-success' : 'bg-secondary'}"
+                                                      th:text="${driver.available ? 'Available' : 'Busy'}">Available</span>
+                                    </td>
+                                    <td th:text="${driver.activeDeliveries}">2</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info" th:onclick="'viewDriverDetails(' + ${driver.id} + ')'">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" th:onclick="'removeDriver(' + ${driver.id} + ')'">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Driver Modal -->
+<div class="modal fade" id="assignDriverModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Order to Driver</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/manager/assign-driver}" method="post" id="assignDriverForm">
+                    <input type="hidden" name="orderId" id="assignOrderId">
+
+                    <div class="mb-3">
+                        <h6>Order Details</h6>
+                        <div id="orderDetailsSection">
+                            <p><strong>Order #:</strong> <span id="modalOrderNumber"></span></p>
+                            <p><strong>Customer:</strong> <span id="modalCustomerName"></span></p>
+                            <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+                            <p><strong>Weight:</strong> <span id="modalWeight"></span> kg</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Available Drivers</h6>
+                        <div id="driversList">
+                            <div class="driver-card" th:each="driver : ${availableDrivers}" th:onclick="'selectDriver(' + ${driver.id} + ')'">
+                                <div class="d-flex justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="driver-avatar me-3" th:text="${driver.initials}">JD</div>
+                                        <div>
+                                            <strong th:text="${driver.name}">John Doe</strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="fas fa-truck me-1"></i><span th:text="${driver.vehicle}">Van</span> |
+                                                <i class="fas fa-route me-1"></i><span th:text="${driver.currentLoad}">2</span> orders
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted"><span th:text="${driver.serviceArea}">Area</span></small>
+                                        <br>
+                                        <span class="badge bg-success" th:if="${driver.available}">Available</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="driverId" id="selectedDriverId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="assignDriverForm" class="btn btn-primary">Assign Driver</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Driver Modal -->
+<div class="modal fade" id="addDriverModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Driver</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/manager/add-driver}" method="post" id="addDriverForm">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vehicle Type</label>
+                        <select class="form-select" name="vehicleType" required>
+                            <option value="">Select...</option>
+                            <option value="motorcycle">Motorcycle</option>
+                            <option value="car">Car</option>
+                            <option value="van">Van</option>
+                            <option value="truck">Truck</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vehicle License Plate</label>
+                        <input type="text" class="form-control" name="licensePlate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Service Area</label>
+                        <input type="text" class="form-control" name="serviceArea" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addDriverForm" class="btn btn-success">Add Driver</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Delivery Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/manager/update-status}" method="post" id="updateStatusForm">
+                    <input type="hidden" name="deliveryId" id="updateDeliveryId">
+
+                    <div class="mb-3">
+                        <label class="form-label">New Status</label>
+                        <select class="form-select" name="status" required>
+                            <option value="picked_up">Mark as Picked Up</option>
+                            <option value="in_transit">Mark In Transit</option>
+                            <option value="delivered">Mark Delivered</option>
+                            <option value="failed">Failed Delivery</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="updateStatusForm" class="btn btn-primary">Update Status</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Section Navigation
+    document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Update active state
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show selected section
+            const sectionId = this.dataset.section + '-section';
+            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+        });
+    });
+
+    // Assign Driver Functions
+    function assignDriver(orderId) {
+        event.stopPropagation();
+        document.getElementById('assignOrderId').value = orderId;
+
+        // Fetch and populate order details (would be AJAX in real implementation)
+        document.getElementById('modalOrderNumber').textContent = 'ORD-' + orderId;
+
+        const modal = new bootstrap.Modal(document.getElementById('assignDriverModal'));
+        modal.show();
+    }
+
+    function selectDriver(driverId) {
+        document.querySelectorAll('.driver-card').forEach(card => card.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        document.getElementById('selectedDriverId').value = driverId;
+    }
+
+    function openOrderDetails(orderId) {
+        window.location.href = '/manager/order/' + orderId;
+    }
+
+    function updateStatus(deliveryId) {
+        document.getElementById('updateDeliveryId').value = deliveryId;
+        const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+        modal.show();
+    }
+
+    function viewDriverDetails(driverId) {
+        window.location.href = '/manager/driver/' + driverId;
+    }
+
+    function removeDriver(driverId) {
+        if (confirm('Are you sure you want to remove this driver?')) {
+            window.location.href = '/manager/remove-driver/' + driverId;
+        }
+    }
+
+    function scheduleOrder(orderId) {
+        alert('Schedule order: ' + orderId);
+    }
+
+    function refreshOrders() {
+        location.reload();
+    }
+
+    // Update last updated time
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('lastUpdated').textContent = now.toLocaleTimeString();
+    }, 1000);
+</script>
+</body>
+</html>

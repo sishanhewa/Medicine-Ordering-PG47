@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Order</title></head>
+<body style="font-family: system-ui, sans-serif">
+<h2>Order Details</h2>
+<p><b>Order #:</b> <span th:text="${order.orderNumber}">ORD-001</span></p>
+<p><b>Customer:</b> <span th:text="${order.customerName}">Jane</span></p>
+<p><b>Address:</b> <span th:text="${order.deliveryAddress}">123 St</span></p>
+<p><b>Window:</b> <span th:text="${order.deliveryWindow}">10-12</span></p>
+<p><b>Weight:</b> <span th:text="${order.weight}">1.2</span> kg</p>
+<p><b>Status:</b> <span th:text="${order.status}">Pending</span></p>
+<p><a href="/manager/dashboard">← Back to Dashboard</a></p>
+</body>
+</html>
