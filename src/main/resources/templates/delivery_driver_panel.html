@@ -255,13 +255,13 @@
                                 </div>
 
                                 <div class="d-flex gap-2 flex-wrap">
-                                    <button class="btn btn-primary action-btn" th:onclick="'startDelivery(' + ${delivery.id} + ')'">
+                                    <button class="btn btn-primary action-btn" th:data-delivery-id="${delivery.id}" onclick="startDelivery(this.dataset.deliveryId)">
                                         <i class="fas fa-play me-1"></i> Start Delivery
                                     </button>
-                                    <button class="btn btn-outline-info action-btn" th:onclick="'viewRoute(' + ${delivery.id} + ')'">
+                                    <button class="btn btn-outline-info action-btn" th:data-delivery-id="${delivery.id}" onclick="viewRoute(this.dataset.deliveryId)">
                                         <i class="fas fa-route me-1"></i> View Route
                                     </button>
-                                    <button class="btn btn-outline-secondary action-btn" th:onclick="'callCustomer(\'' + ${delivery.customerPhone} + '\')'">
+                                    <button class="btn btn-outline-secondary action-btn" th:data-phone="${delivery.customerPhone}" onclick="callCustomer(this.dataset.phone)">
                                         <i class="fas fa-phone me-1"></i> Call
                                     </button>
                                 </div>
@@ -317,13 +317,13 @@
                                 </div>
 
                                 <div class="d-flex gap-2 flex-wrap">
-                                    <button class="btn btn-success action-btn" th:onclick="'markDelivered(' + ${delivery.id} + ')'">
+                                    <button class="btn btn-success action-btn" th:data-delivery-id="${delivery.id}" onclick="markDelivered(this.dataset.deliveryId)">
                                         <i class="fas fa-check me-1"></i> Mark Delivered
                                     </button>
-                                    <button class="btn btn-warning action-btn" th:onclick="'reportIssue(' + ${delivery.id} + ')'">
+                                    <button class="btn btn-warning action-btn" th:data-delivery-id="${delivery.id}" onclick="reportIssue(this.dataset.deliveryId)">
                                         <i class="fas fa-exclamation-triangle me-1"></i> Report Issue
                                     </button>
-                                    <button class="btn btn-outline-info action-btn" th:onclick="'updateETA(' + ${delivery.id} + ')'">
+                                    <button class="btn btn-outline-info action-btn" th:data-delivery-id="${delivery.id}" onclick="updateETA(this.dataset.deliveryId)">
                                         <i class="fas fa-clock me-1"></i> Update ETA
                                     </button>
                                 </div>

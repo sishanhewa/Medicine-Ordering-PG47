@@ -35,10 +35,16 @@ public class DriverRepository {
                 .stream().findFirst();
     }
 
+    public Optional<Driver> findByEmail(String email) {
+        String sql = "SELECT * FROM Drivers WHERE email = ?";
+        return jdbc.query(sql, new BeanPropertyRowMapper<>(Driver.class), email)
+                .stream().findFirst();
+    }
+
     public void save(Driver d) {
-        String sql = "INSERT INTO Drivers(name,email,phone,vehicleType,licensePlate,serviceArea,available) " +
-                "VALUES (?,?,?,?,?,?,?)";
-        jdbc.update(sql, d.getName(), d.getEmail(), d.getPhone(),
+        String sql = "INSERT INTO Drivers(name,email,phone,passwordHash,vehicleType,licensePlate,serviceArea,available) " +
+                "VALUES (?,?,?,?,?,?,?,?)";
+        jdbc.update(sql, d.getName(), d.getEmail(), d.getPhone(), d.getPasswordHash(),
                 d.getVehicleType(), d.getLicensePlate(), d.getServiceArea(), d.isAvailable());
     }
 

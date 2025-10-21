@@ -3,6 +3,7 @@ package com.example.medicineordering.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -15,4 +16,6 @@ public class Order {
     private String deliveryWindow;
     private double weight;
     private String status;
+    private LocalDateTime orderDate;
+    private int itemCount;
 }

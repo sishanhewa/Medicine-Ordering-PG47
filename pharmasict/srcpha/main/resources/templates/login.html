@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+  </head>
+  <body class="page-login">
+    <div class="container">
+        <h1>Medicare(pvt ltd)</h1>
+        <div class="sub">Sign in to access your dashboard</div>
+        <form th:action="@{/login}" method="post">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="pharmacist or customer" required />
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required />
+            <div class="actions">
+                <button type="submit">Sign in</button>
+            </div>
+            <div class="error" th:if="${param.error}">Invalid username or password</div>
+            <!--<div class="hint">Demo users: pharmacist/pharma123, customer/cust123</div>-->
+        </form>
+    </div>
+  </body>
+  </html>
+
+

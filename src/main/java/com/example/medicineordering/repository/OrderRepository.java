@@ -38,11 +38,50 @@ public class OrderRepository {
                 .stream().findFirst();
     }
 
+    public List<Order> findAll() {
+        String sql = "SELECT * FROM Orders ORDER BY id DESC";
+        return jdbc.query(sql, new BeanPropertyRowMapper<>(Order.class));
+    }
+
     public void updateOrderStatus(int id, String status) {
         jdbc.update("UPDATE Orders SET status = ? WHERE id = ?", status, id);
     }
 
     public void setOrderWindow(int id, String window) {
         jdbc.update("UPDATE Orders SET deliveryWindow = ? WHERE id = ?", window, id);
+    }
+
+    // Save a new order and return the saved order with generated ID
+    public Order save(Order order) {
+        String sql = "INSERT INTO dbo.Orders (orderNumber, customerName, deliveryAddress, deliveryWindow, weight, status) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbc.update(sql, 
+            order.getOrderNumber(),
+            order.getCustomerName(),
+            order.getDeliveryAddress(),
+            order.getDeliveryWindow(),
+            order.getWeight(),
+            order.getStatus()
+        );
+        
+        // Get the generated ID
+        String getIdSql = "SELECT TOP 1 id FROM dbo.Orders WHERE orderNumber = ? ORDER BY id DESC";
+        Integer generatedId = jdbc.queryForObject(getIdSql, Integer.class, order.getOrderNumber());
+        if (generatedId != null) {
+            order.setId(generatedId);
+        }
+        
+        return order;
+    }
+
+    // Delete order by ID
+    public void deleteById(int id) {
+        String sql = "DELETE FROM dbo.Orders WHERE id = ?";
+        jdbc.update(sql, id);
+    }
+
+    // Find recent orders (for customer order history)
+    public List<Order> findRecent(int limit) {
+        String sql = "SELECT TOP " + limit + " * FROM dbo.Orders ORDER BY id DESC";
+        return jdbc.query(sql, new BeanPropertyRowMapper<>(Order.class));
     }
 }

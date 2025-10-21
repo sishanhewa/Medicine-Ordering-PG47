@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pharmacist Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+</head>
+<body class="page-pharmacist-dashboard">
+<header>
+    <div class="brand"><span class="dot"></span>PharmaAid</div>
+    <nav>
+        <a href="/pharmacist/dashboard">Home</a>
+        <a href="/pharmacist/medicines">Medicines</a>
+        <a href="/pharmacist/prescriptions">Prescriptions</a>
+        <a href="/logout" class="primary">Logout</a>
+    </nav>
+    </header>
+<div class="container">
+
+    <section class="hero">
+        <div>
+            <h1>Welcome, Pharmacist</h1>
+            <p>Manage your medicine inventory, review and approve prescriptions, and keep patients cared for with a streamlined, modern workspace.</p>
+            <div class="cta">
+                <a href="/pharmacist/prescriptions" class="btn primary">Review Prescriptions</a>
+                <a href="/pharmacist/medicines" class="btn ghost">Manage Medicines</a>
+            </div>
+        </div>
+        <div class="illus">
+            <!-- Simple medicine-themed illustration (inline SVG placeholder) -->
+            <svg viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="30" y="40" width="80" height="120" rx="12" fill="#e2e8f0"/>
+                <rect x="45" y="60" width="50" height="8" rx="4" fill="#94a3b8"/>
+                <rect x="45" y="78" width="60" height="8" rx="4" fill="#cbd5e1"/>
+                <rect x="45" y="96" width="55" height="8" rx="4" fill="#cbd5e1"/>
+                <circle cx="210" cy="110" r="50" fill="#dbeafe"/>
+                <rect x="185" y="85" width="60" height="16" rx="8" fill="#2563eb"/>
+                <rect x="185" y="112" width="60" height="16" rx="8" fill="#1d4ed8"/>
+                <rect x="115" y="130" width="70" height="12" rx="6" fill="#93c5fd"/>
+            </svg>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="cards">
+            <div class="card">
+                <h3>Stock Management</h3>
+                <p>Update quantities and prices to keep inventory accurate.</p>
+            </div>
+            <div class="card">
+                <h3>Prescription Review</h3>
+                <p>Approve or reject prescriptions with clear patient details.</p>
+            </div>
+            <div class="card">
+                <h3>Fast Actions</h3>
+                <p>Jump quickly into common workflows from action tiles.</p>
+            </div>
+        </div>
+
+        <div class="tiles">
+            <a href="/pharmacist/medicines" class="tile">
+                Manage Medicines
+                <span>Inventory, pricing, availability</span>
+            </a>
+            <a href="/pharmacist/prescriptions" class="tile">
+                Approve Prescriptions
+                <span>Requests waiting for review</span>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        © PharmaAid • Designed for clarity and speed
+    </footer>
+
+</div>
+</body>
+</html>
+
+

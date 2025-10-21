@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Prescription Approval - Pharmacist</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+</head>
+<body class="page-pharmacist-prescriptions">
+<header>
+    <div class="brand"><span class="dot"></span>PharmaAid</div>
+    <nav>
+        <a href="/pharmacist/dashboard">Home</a>
+        <a href="/pharmacist/medicines">Medicines</a>
+        <a href="/pharmacist/prescriptions" class="active">Prescriptions</a>
+        <a href="/logout" class="primary">Logout</a>
+    </nav>
+    </header>
+<div class="container">
+    <div class="card">
+        <h2>Customer Prescriptions</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>File</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${prescriptions}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.customerUsername}"></td>
+                        <td>
+                            <a th:href="@{'/customer/prescription/file/' + ${p.id}}" target="_blank" th:text="${p.fileName}"></a>
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="${p.status}=='APPROVED'?' approved':(${p.status}=='REJECTED'?' rejected':' pending')" th:text="${p.status}"></span>
+                        </td>
+                        <td>
+                            <form th:action="@{'/pharmacist/prescription/' + ${p.id} + '/approve'}" method="post" class="inline-form" style="margin-right:8px;">
+                                <button type="submit">Approve</button>
+                            </form>
+                            <form th:action="@{'/pharmacist/prescription/' + ${p.id} + '/reject'}" method="post" class="inline-form">
+                                <button type="submit" class="danger">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
