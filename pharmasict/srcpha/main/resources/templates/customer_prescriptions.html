@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Prescriptions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    </head>
+<body class="page-customer-prescriptions">
+<header>
+    <div class="pa-brand"><span class="pa-brand-dot"></span>PharmaAid</div>
+    <nav>
+        <a class="pa-link" href="/customer">Home</a>
+        <a class="pa-link" href="/customer/prescriptions">My Prescriptions</a>
+        <a class="pa-btn pa-btn-primary" href="/logout">Logout</a>
+    </nav>
+    </header>
+<div class="container">
+    <div class="card">
+        <h2>Uploaded prescriptions</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>File</th>
+                        <th>Status</th>
+                        <th>Uploaded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${prescriptions}">
+                        <td th:text="${p.id}"></td>
+                        <td><a th:href="@{'/customer/prescription/file/' + ${p.id}}" th:text="${p.fileName}" target="_blank"></a></td>
+                        <td><span class="badge" th:classappend="${p.status}" th:text="${p.status}"></span></td>
+                        <td th:text="${#temporals.format(p.uploadedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

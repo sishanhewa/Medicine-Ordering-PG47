@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Medicines - Pharmacist</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+</head>
+<body class="page-pharmacist-medicines">
+<header>
+    <div class="brand"><span class="dot"></span>PharmaAid</div>
+    <nav>
+        <a href="/pharmacist/dashboard">Home</a>
+        <a href="/pharmacist/medicines" class="active">Medicines</a>
+        <a href="/pharmacist/prescriptions">Prescriptions</a>
+        <a href="/logout" class="primary">Logout</a>
+    </nav>
+    </header>
+<div class="container">
+    <div class="card">
+        <div class="toolbar">
+            <h2 class="no-margin">Medicine List</h2>
+            <div class="toolbar-actions">
+                <a href="#add-medicine" class="pa-btn pa-btn-primary">Add Medicine</a>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Manufacturer</th>
+                        <th class="num">Stock</th>
+                        <th class="num">Unit Price</th>
+                        <th class="actions-col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m : ${medicines}">
+                        <td th:text="${m.name}"></td>
+                        <td th:text="${m.manufacturer}"></td>
+                        <td class="num" th:text="${m.stockQuantity}"></td>
+                        <td class="num" th:text="${#numbers.formatDecimal(m.unitPrice, 1, 2)}"></td>
+                        <td class="actions">
+                            <form th:action="@{'/pharmacist/medicine/' + ${m.id} + '/stock'}" method="post" class="inline-form stock-editor">
+                                <input type="number" name="stockQuantity" min="0" th:value="${m.stockQuantity}" class="pa-input input-compact" />
+                                <button type="submit">Update</button>
+                            </form>
+                            <form th:action="@{'/pharmacist/medicine/' + ${m.id} + '/delete'}" method="post" class="inline-form">
+                                <button type="submit" class="danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card" id="add-medicine">
+        <h2>Add/Update Medicine</h2>
+        <form th:action="@{/pharmacist/medicine}" method="post" class="add-form">
+            <input name="name" placeholder="Name" required class="pa-input" />
+            <input name="manufacturer" placeholder="Manufacturer" required class="pa-input" />
+            <input name="stockQuantity" type="number" min="0" placeholder="Stock" required class="pa-input" />
+            <input name="unitPrice" type="number" step="0.01" min="0" placeholder="Price" required class="pa-input" />
+            <button type="submit">Save</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+
+

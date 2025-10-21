@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pharmacist Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .action-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-pharmacist {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-pharmacist:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand" href="/pharmacist/dashboard">
+                <i class="fas fa-pills me-2"></i>PharmaCare
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/pharmacist/dashboard">Dashboard</a>
+                <a class="nav-link" href="/pharmacist/medicines">Medicines</a>
+                <a class="nav-link" href="/pharmacist/prescriptions">Prescriptions</a>
+                <a class="nav-link" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" th:text="${totalMedicines}">0</div>
+                        <div>Total Medicines</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" th:text="${pendingPrescriptions}">0</div>
+                        <div>Pending Prescriptions</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" th:text="${approvedPrescriptions}">0</div>
+                        <div>Approved Today</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" th:text="${lowStockMedicines}">0</div>
+                        <div>Low Stock Items</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card action-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-pills fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Manage Medicines</h5>
+                        <p class="card-text">Add, edit, or update medicine inventory and stock levels.</p>
+                        <a href="/pharmacist/medicines" class="btn btn-pharmacist">
+                            <i class="fas fa-edit me-2"></i>Manage Inventory
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card action-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-medical fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Review Prescriptions</h5>
+                        <p class="card-text">Approve or reject prescription requests from customers.</p>
+                        <a href="/pharmacist/prescriptions" class="btn btn-pharmacist">
+                            <i class="fas fa-check-circle me-2"></i>Review Requests
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Welcome to your pharmacist dashboard! Use the quick actions above to manage your pharmacy operations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

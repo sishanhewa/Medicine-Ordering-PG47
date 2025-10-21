@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer - Verify Prescription</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    <style>
+        /* keep inline minimal; primary look comes from theme.css */
+        .hero { padding: 1.5rem; }
+        .hero h1 { margin: 0 0 0.5rem; }
+        .hero p { margin: 0.25rem 0; }
+    </style>
+    </head>
+<body class="page-customer-landing">
+<header>
+    <div class="pa-brand"><span class="pa-brand-dot"></span>PharmaAid</div>
+    <nav>
+        <a class="pa-link" href="/customer">Home</a>
+        <a class="pa-link" href="/customer/prescriptions">My Prescriptions</a>
+        <a class="pa-btn pa-btn-primary" href="/logout">Logout</a>
+    </nav>
+    </header>
+<div class="hero-wrap">
+    <section class="hero" th:style="|background: url('@{/uploads/pharmacist-holding-medicine-box-capsule-pack-pharmacy-drugstore-min-scaled.jpg}') center/cover no-repeat;|">
+        <div class="hero-inner">
+            <h1>PharmaAid verifies your prescription</h1>
+            <p class="sub">Upload your prescription and our pharmacist will review it and confirm medicine availability at our pharmacy.</p>
+            <div class="cta">
+                <a href="/customer/upload" class="btn primary">Upload Now</a>
+                <a href="/customer/prescriptions" class="btn ghost">View My Prescriptions</a>
+            </div>
+        </div>
+    </section>
+    <div class="container">
+        <div class="features">
+            <div class="feature">
+                <div class="icon">24</div>
+                <h3>Open 24/7</h3>
+                <p>Submit prescriptions anytime</p>
+            </div>
+            <div class="feature">
+                <div class="icon">Rx</div>
+                <h3>Verified by Pharmacist</h3>
+                <p>Professional review and advice</p>
+            </div>
+            <div class="feature">
+                <div class="icon">✔</div>
+                <h3>Availability Check</h3>
+                <p>Know what’s in stock fast</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

@@ -3,9 +3,13 @@ package com.example.medicineordering.service;
 import com.example.medicineordering.model.Delivery;
 import com.example.medicineordering.model.Driver;
 import com.example.medicineordering.model.Order;
+import com.example.medicineordering.model.OrderItem;
+import com.example.medicineordering.model.Prescription;
 import com.example.medicineordering.repository.DeliveryRepository;
 import com.example.medicineordering.repository.DriverRepository;
 import com.example.medicineordering.repository.OrderRepository;
+import com.example.medicineordering.repository.OrderItemRepository;
+import com.example.medicineordering.repository.PrescriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.medicineordering.service.dto.AvailableDriverRow;
@@ -19,12 +23,16 @@ public class ManagerServiceImpl implements ManagerService {
     private final OrderRepository orderRepo;
     private final DriverRepository driverRepo;
     private final DeliveryRepository deliveryRepo;
+    private final OrderItemRepository orderItemRepo;
+    private final PrescriptionRepository prescriptionRepo;
 
     @Autowired
-    public ManagerServiceImpl(OrderRepository orderRepo, DriverRepository driverRepo, DeliveryRepository deliveryRepo) {
+    public ManagerServiceImpl(OrderRepository orderRepo, DriverRepository driverRepo, DeliveryRepository deliveryRepo, OrderItemRepository orderItemRepo, PrescriptionRepository prescriptionRepo) {
         this.orderRepo = orderRepo;
         this.driverRepo = driverRepo;
         this.deliveryRepo = deliveryRepo;
+        this.orderItemRepo = orderItemRepo;
+        this.prescriptionRepo = prescriptionRepo;
     }
 
     @Override
@@ -38,11 +46,17 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
+    public List<Order> getAllOrders() {
+        return orderRepo.findAll();
+    }
+
+    @Override
     public List<Driver> getAllDrivers() {
         List<Driver> drivers = driverRepo.findAll();
         // augment: activeDeliveries count for UI column
         for (Driver d : drivers) {
-            int count = driverRepo.countActiveDeliveries(d.getId());
+            // Count active deliveries for each driver (for future use)
+            driverRepo.countActiveDeliveries(d.getId());
             // if your Driver model doesn't have activeDeliveries, you can ignore;
             // otherwise set it via reflection or add a setter. Keeping logic simple here.
         }
@@ -258,6 +272,16 @@ public class ManagerServiceImpl implements ManagerService {
             ));
         }
         return rows;
+    }
+
+    @Override
+    public List<OrderItem> getOrderItems(int orderId) {
+        return orderItemRepo.findByOrderId(orderId);
+    }
+
+    @Override
+    public Prescription getPrescriptionByOrderId(int orderId) {
+        return prescriptionRepo.findByOrderId(orderId);
     }
 
 }

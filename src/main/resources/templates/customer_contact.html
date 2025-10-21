@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Crystal Care</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            text-decoration: none;
+        }
+        
+        .navbar .btn {
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar .btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .contact-hero {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .contact-hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .contact-form {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-top: -2rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #1e40af);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .contact-info {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        
+        .contact-info h5 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-item:hover {
+            background: #e0f2fe;
+            transform: translateX(5px);
+        }
+        
+        .contact-item i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-right: 1rem;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .contact-item div h6 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+        }
+        
+        .contact-item div p {
+            margin: 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-low { background: #dcfce7; color: #166534; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-high { background: #fed7aa; color: #9a3412; }
+        .priority-urgent { background: #fee2e2; color: #991b1b; }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        
+        .toast {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            min-width: 300px;
+            transform: translateX(100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left-color: #10b981;
+        }
+        
+        .toast.error {
+            border-left-color: #dc2626;
+        }
+        
+        .toast-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .toast-icon.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .toast-icon.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+        }
+        
+        .toast-message {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.25rem;
+            cursor: pointer;
+            margin-left: auto;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toast-close:hover {
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+        <a class="navbar-brand" href="#" style="text-decoration: none;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <!-- Crystal Care Logo -->
+                <img src="/images/crystal-care-logo.png" 
+                     alt="Crystal Care Logo" 
+                     style="width: 40px; height: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                <!-- Professional Typography -->
+                <div style="font-weight: 700; letter-spacing: 0.5px; font-family: 'Montserrat', sans-serif; font-size: 1.5rem;">
+                    <span style="color: #ffffff;">Crystal</span> <span style="color: #10b981;">Care</span>
+                </div>
+            </div>
+        </a>
+            <div class="d-flex gap-2">
+                <a th:href="@{/customer/dashboard}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-home me-1"></i>Dashboard
+                </a>
+                <a th:href="@{/customer/profile}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-user me-1"></i>My Profile
+                </a>
+                <a th:href="@{/customer/orders}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-list me-1"></i>My Orders
+                </a>
+                <a th:href="@{/customer/cart}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-shopping-cart me-1"></i>View Cart
+                </a>
+                <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="contact-hero">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>We're here to help! Send us your questions, concerns, or feedback.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+        <div class="row g-4">
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="contact-form">
+                    <h3 class="mb-4">Send us a Message</h3>
+                    
+                    <!-- Flash Messages -->
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span th:text="${success}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    
+                    <form th:action="@{/customer/contact}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="customerName" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="customerName" name="customerName" 
+                                       th:value="${customerName}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customerEmail" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="customerEmail" name="customerEmail" 
+                                       th:value="${customerEmail}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customerPhone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="customerPhone" name="customerPhone" 
+                                       th:value="${customerPhone}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="Low">Low - General inquiry</option>
+                                    <option value="Medium" selected>Medium - Standard support</option>
+                                    <option value="High">High - Urgent issue</option>
+                                    <option value="Urgent">Urgent - Critical problem</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="subject" class="form-label">Subject *</label>
+                                <input type="text" class="form-control" id="subject" name="subject" 
+                                       placeholder="Brief description of your inquiry" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label">Message *</label>
+                                <textarea class="form-control" id="message" name="message" rows="5" 
+                                          placeholder="Please provide details about your inquiry..." required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="col-lg-4">
+                <div class="contact-info">
+                    <h5>Get in Touch</h5>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h6>Phone</h6>
+                            <p>+94 77 123 4567</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h6>Email</h6>
+                            <p>support@crystalcare.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h6>Address</h6>
+                            <p>123 Health Street<br>Colombo 07, Sri Lanka</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h6>Business Hours</h6>
+                            <p>Mon - Fri: 8:00 AM - 6:00 PM<br>Sat: 9:00 AM - 4:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="mb-3">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb, #10b981); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-plus" style="color: white; font-size: 0.9rem;"></i>
+                            </div>
+                            <div>
+                                <span style="color: #1e40af; font-weight: 700;">Crystal</span>
+                                <span style="color: #10b981; font-weight: 700;">Care</span>
+                            </div>
+                        </div>
+                    </h5>
+                    <p class="text-light">Your trusted partner for quality medicines and healthcare solutions. Fast delivery, genuine products, and professional service.</p>
+                </div>
+                <div class="col-lg-2">
+                    <h6 class="mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Contact</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Privacy Policy</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="mb-3">Categories</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Pain Relief</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Antibiotics</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Vitamins</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Allergy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="mb-3">Contact Info</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i>+94 77 123 4567</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>support@crystalcare.com</li>
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>Colombo, Sri Lanka</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0 text-light">&copy; 2024 Crystal Care. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toast Notification System
+        function showToast(message, type = 'success', duration = 4000) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'fas fa-check' : 'fas fa-exclamation-triangle';
+            const title = type === 'success' ? 'Success!' : 'Error!';
+            
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <div class="toast-icon ${type}">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="toast-title">${title}</div>
+                    <button class="toast-close" onclick="hideToast(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="toast-message">${message}</div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                hideToast(toast);
+            }, duration);
+        }
+
+        function hideToast(toast) {
+            if (typeof toast === 'object' && toast.classList) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            } else {
+                const toastElement = toast.closest('.toast');
+                if (toastElement) {
+                    toastElement.classList.remove('show');
+                    setTimeout(() => {
+                        if (toastElement.parentNode) {
+                            toastElement.parentNode.removeChild(toastElement);
+                        }
+                    }, 300);
+                }
+            }
+        }
+
+        // Enhanced functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show toasts for flash messages
+            const successMessages = document.querySelectorAll('.alert-success');
+            successMessages.forEach(alert => {
+                const message = alert.textContent.trim();
+                if (message) {
+                    showToast(message, 'success');
+                    alert.style.display = 'none';
+                }
+            });
+            
+            const errorMessages = document.querySelectorAll('.alert-danger');
+            errorMessages.forEach(alert => {
+                const message = alert.textContent.trim();
+                if (message) {
+                    showToast(message, 'error');
+                    alert.style.display = 'none';
+                }
+            });
+            
+            // Form validation
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let isValid = true;
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            field.classList.add('is-invalid');
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        showToast('Please fill in all required fields.', 'error');
+                    }
+                });
+            }
+        });
+
+        function hideAllToasts() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => hideToast(toast));
+        }
+    </script>
+</body>
+</html>

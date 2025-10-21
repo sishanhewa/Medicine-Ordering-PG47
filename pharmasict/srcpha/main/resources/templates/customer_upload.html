@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Prescription</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    </head>
+<body class="page-customer-prescription">
+<header>
+    <div class="pa-brand"><span class="pa-brand-dot"></span>PharmaAid</div>
+    <nav>
+        <a class="pa-link" href="/customer">Home</a>
+        <a class="pa-link" href="/customer/prescriptions">My Prescriptions</a>
+        <a class="pa-btn pa-btn-primary" href="/logout">Logout</a>
+    </nav>
+    </header>
+<div class="container">
+    <div class="card">
+        <h2>Submit your prescription</h2>
+        <form th:action="@{/customer/prescription/upload}" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*,application/pdf" required />
+            <button type="submit">Upload</button>
+        </form>
+        <p class="muted" style="margin-top: 0.5rem;">Accepted formats: JPG, PNG, PDF</p>
+    </div>
+</div>
+</body>
+</html>
+
+
