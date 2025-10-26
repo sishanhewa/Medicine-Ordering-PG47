@@ -86,11 +86,13 @@ public class ManagerServiceImpl implements ManagerService {
             String initials = Arrays.stream(r.getName().trim().split("\\s+"))
                     .map(s -> s.substring(0,1).toUpperCase())
                     .collect(Collectors.joining());
-            String status = normalizeStatus(d.getStatus());
+            String status = o.getStatus() != null ? o.getStatus() : normalizeStatus(d.getStatus());
             String statusClass = switch (status) {
                 case "In Transit" -> "status-assigned";
                 case "Picked Up" -> "status-assigned";
                 case "Assigned" -> "status-ready";
+                case "Delivered" -> "status-delivered";
+                case "Failed" -> "status-failed";
                 default -> "status-ready";
             };
 

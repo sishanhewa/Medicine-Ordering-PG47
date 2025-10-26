@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Message Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1>Message Details</h1>
+    <div th:if="${message}">
+        <p><strong>ID:</strong> <span th:text="${message.id}"></span></p>
+        <p><strong>Sender:</strong> <span th:text="${message.sender}"></span></p>
+        <p><strong>Receiver:</strong> <span th:text="${message.receiver}"></span></p>
+        <p><strong>Content:</strong> <span th:text="${message.content}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${message.status}"></span></p>
+        <p><strong>Timestamp:</strong> <span th:text="${message.timestamp}"></span></p>
+        <h3>Respond</h3>
+        <form th:action="@{/support/messages}" th:object="${message}" method="post">
+            <input type="hidden" th:field="*{sender}" value="support">
+            <input type="hidden" th:field="*{receiver}" th:value="${message.sender}">
+            <label for="content">Response:</label>
+            <textarea id="content" th:field="*{content}" required></textarea>
+            <input type="hidden" th:field="*{status}" value="read">
+            <button type="submit">Send Response</button>
+        </form>
+        <div>
+            <form th:action="@{/support/messages/{id}/archive(id=${message.id})}" method="post" style="display:inline;">
+                <button type="submit">Archive</button>
+            </form>
+            <a th:href="@{/support/messages/{id}/delete-confirm(id=${message.id})}">Delete</a>
+        </div>
+    </div>
+    <div th:unless="${message}">
+        <p>Message not found.</p>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -118,4 +118,20 @@ public class UserRepository {
         Integer count = jdbc.queryForObject(sql, Integer.class, email);
         return count != null && count > 0;
     }
+
+    /**
+     * Count users by role
+     */
+    public long countByRole(String role) {
+        String sql = "SELECT COUNT(*) FROM dbo.Users WHERE role = ?";
+        return jdbc.queryForObject(sql, Long.class, role);
+    }
+
+    /**
+     * Count all users
+     */
+    public long countAll() {
+        String sql = "SELECT COUNT(*) FROM dbo.Users";
+        return jdbc.queryForObject(sql, Long.class);
+    }
 }

@@ -105,3 +105,6 @@ public class ContactInquiry {
         this.priority = priority;
     }
 }
+
+
+

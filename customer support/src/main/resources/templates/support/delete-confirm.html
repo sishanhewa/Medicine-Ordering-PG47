@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Delete</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1>Confirm Delete</h1>
+    <div th:if="${message}">
+        <p>Are you sure you want to delete this message?</p>
+        <p><strong>ID:</strong> <span th:text="${message.id}"></span></p>
+        <p><strong>Sender:</strong> <span th:text="${message.sender}"></span></p>
+        <p><strong>Content:</strong> <span th:text="${message.content != null ? message.content.substring(0, (message.content.length() > 30 ? 30 : message.content.length())) + '...' : 'No content'}"></span></p>
+        <form th:action="@{/support/messages/{id}/delete(id=${message.id})}" method="post" style="display:inline;">
+            <button type="submit" class="confirm-button">Delete</button>
+        </form>
+        <a th:href="@{/support/messages/{id}/delete-cancel(id=${message.id})}">Cancel</a>
+    </div>
+    <div th:unless="${message}">
+        <p>Message not found.</p>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

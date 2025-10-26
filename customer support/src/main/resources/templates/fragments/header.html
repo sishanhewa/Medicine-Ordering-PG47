@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <meta charset="UTF-8">
+    <title>Header</title>
+
+    <!-- ✅ Link your CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- ✅ Link your JS -->
+    <script th:src="@{/js/script.js}" defer></script>
+</head>
+<body>
+<div class="header">
+    <nav>
+        <a href="/support/dashboard">Dashboard</a> |
+        <a href="/support/messages">Messages</a> |
+        <a href="/support/notifications">Send Notification</a> |
+        <a href="/support/view-notifications">View Notifications</a> |
+        <a href="/support/archived-messages">Archive</a> |
+        <button type="button" onclick="history.back()">Back</button>
+    </nav>
+</div>
+</body>
+</html>

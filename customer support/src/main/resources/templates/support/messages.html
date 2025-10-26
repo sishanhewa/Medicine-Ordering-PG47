@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1>Customer Messages</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Sender</th>
+            <th>Content</th>
+            <th>Status</th>
+            <th>Timestamp</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="message : ${messages}">
+            <td th:text="${message.id}"></td>
+            <td th:text="${message.sender}"></td>
+            <td th:text="${message.content != null ? message.content.substring(0, (message.content.length() > 30 ? 30 : message.content.length())) + '...' : 'No content'}"></td>
+            <td th:text="${message.status}"></td>
+            <td th:text="${message.timestamp}"></td>
+            <td>
+                <a th:href="@{/support/messages/{id}(id=${message.id})}">View/Respond</a>
+                <form th:action="@{/support/messages/{id}/archive(id=${message.id})}" method="post" style="display:inline;">
+                    <button type="submit">Archive</button>
+                </form>
+
+                <a th:href="@{/support/messages/{id}/delete-confirm(id=${message.id})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

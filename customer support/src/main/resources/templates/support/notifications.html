@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Notification</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<!-- Header Fragment -->
+<div th:insert="~{fragments/header :: header}"></div>
+
+<!-- Main Container -->
+<div class="container">
+    <h1 class="page-title">Send Notification</h1>
+
+    <form th:action="@{/support/notifications}" th:object="${notification}" method="post" class="notification-form">
+
+        <!-- Notification Type -->
+        <div class="form-group">
+            <label for="type">Notification Type:</label>
+            <select id="type" th:field="*{type}" required>
+                <option value="" disabled selected>Select a type</option>
+                <option value="order_status">Order Status</option>
+                <option value="delay">Delay</option>
+                <option value="general">General</option>
+            </select>
+        </div>
+
+        <!-- Recipient -->
+        <div class="form-group">
+            <label for="recipient">Recipient:</label>
+            <input type="text" id="recipient" th:field="*{recipient}" placeholder="Enter recipient email or username" required>
+        </div>
+
+        <!-- Content -->
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <textarea id="content" th:field="*{content}" rows="5" placeholder="Type your notification message here..." required></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Send Notification</button>
+        </div>
+    </form>
+</div>
+
+<!-- Footer Fragment -->
+<div th:insert="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

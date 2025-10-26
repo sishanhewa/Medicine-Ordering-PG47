@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Support Dashboard</title>
+
+    <!-- ✅ Link CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- ✅ Link JS -->
+    <script th:src="@{/js/script.js}" defer></script>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <div class="sidebar">
+        <h3>Support Menu</h3>
+        <ul>
+            <li><a href="/support/dashboard">Dashboard</a></li>
+            <li><a href="/support/messages">All Messages</a></li>
+            <li><a href="/support/archived-messages">Archived</a></li>
+        </ul>
+        <a href="/support/notifications" class="btn-primary">Send Update</a>
+    </div>
+    <div class="main-content">
+        <div class="header-bar">
+            <h1>Support Dashboard</h1>
+            <button class="refresh-btn">⟳ Refresh</button>
+        </div>
+        <div class="stats-panel">
+            <div class="stat-card">
+                <h2>Total Messages</h2>
+                <p th:text="${unreadMessages}">0</p>
+            </div>
+        </div>
+        <div class="overview-section">
+            <h2>Recent Messages</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="message : ${messages}">
+                    <td th:text="${message.id}">#001</td>
+                    <td th:text="${message.sender}">Customer Name</td>
+                    <td th:text="${message.content.substring(0, 20)}">Message Subject</td>
+                    <td th:text="${message.status}">Normal</td>
+                    <td>Normal</td>
+                    <td th:text="${message.timestamp}">2025-01-01 10:00</td>
+                    <td>
+                        <button class="action-btn view"> </button>
+                        <button class="action-btn resolve"> </button>
+                        <button class="action-btn archive"> </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="quick-stats">
+            <h3>Quick Stats</h3>
+            <p>Total Messages: <span th:text="${unreadMessages}">0</span></p>
+        </div>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

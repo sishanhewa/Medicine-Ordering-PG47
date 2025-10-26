@@ -53,6 +53,20 @@ BEGIN
     ('pharmacist1', '$2a$10$Yww/JGiV0cklkas.JQ/W7uZdDYsRJaj5gEOveSvD9KuAR3R/AiF/i', 'Pharmacist', 'pharmacist1@test.com', 'Dr. Sarah Pharmacist', '+94 77 555 1234', 1, GETDATE());
 END
 
+-- Test Customer Support (insert only if not exists)
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE username = 'support1')
+BEGIN
+    INSERT INTO dbo.Users (username, passwordHash, role, email, fullName, phone, isActive, createdAt) VALUES
+    ('support1', '$2a$10$Yww/JGiV0cklkas.JQ/W7uZdDYsRJaj5gEOveSvD9KuAR3R/AiF/i', 'CustomerSupport', 'support@crystalcare.com', 'Customer Support Team', '+94 77 123 4567', 1, GETDATE());
+END
+
+-- Test Admin (insert only if not exists)
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE username = 'admin1')
+BEGIN
+    INSERT INTO dbo.Users (username, passwordHash, role, email, fullName, phone, isActive, createdAt) VALUES
+    ('admin1', '$2a$10$Yww/JGiV0cklkas.JQ/W7uZdDYsRJaj5gEOveSvD9KuAR3R/AiF/i', 'ADMIN', 'admin@crystalcare.com', 'System Administrator', '+94 77 000 0000', 1, GETDATE());
+END
+
 -- Add test prescriptions (only if they don't exist)
 IF NOT EXISTS (SELECT 1 FROM dbo.Prescriptions WHERE customerId = 1)
 BEGIN
@@ -64,4 +78,11 @@ ELSE
 BEGIN
     -- Update existing prescription to link to order 1003
     UPDATE dbo.Prescriptions SET orderId = 1003, status = 'APPROVED' WHERE customerId = 1 AND orderId IS NULL;
+END
+
+-- Add FinanceManager user
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE username = 'finance1')
+BEGIN
+    INSERT INTO dbo.Users (username, passwordHash, role, email, fullName, phone, isActive, createdAt) VALUES
+    ('finance1', '$2a$10$5yBzQ2jOGVyH6Hc1yqodGuqWz6BIB58Ru2Qs8rV2SljxURG7Ys9nm', 'FinanceManager', 'finance@crystalcare.com', 'Finance Manager', '+94 77 123 4567', 1, GETDATE());
 END

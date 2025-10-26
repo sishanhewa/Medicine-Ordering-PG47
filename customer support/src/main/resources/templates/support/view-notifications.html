@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Notifications</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1>View Notifications</h1>
+    <div th:if="${notifications == null or notifications.isEmpty()}">
+        <p>No notifications found.</p>
+    </div>
+    <div th:unless="${notifications == null or notifications.isEmpty()}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Recipient</th>
+                <th>Content</th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="notification : ${notifications}">
+                <td th:text="${notification.id}"></td>
+                <td th:text="${notification.type}"></td>
+                <td th:text="${notification.recipient}"></td>
+                <td th:text="${notification.content != null ? notification.content.substring(0, (notification.content.length() > 30 ? 30 : notification.content.length())) + '...' : 'No content'}"></td>
+                <td th:text="${notification.timestamp}"></td>
+                <td>
+                    <a th:href="@{/support/notifications/{id}/edit(id=${notification.id})}">Edit</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

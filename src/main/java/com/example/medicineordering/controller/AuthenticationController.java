@@ -201,9 +201,11 @@ public class AuthenticationController {
             case "Pharmacist":
                 return "redirect:/pharmacist/dashboard";
             case "CustomerSupport":
-                return "redirect:/manager/dashboard";
+                return "redirect:/support/dashboard";
             case "FinanceManager":
-                return "redirect:/manager/dashboard";
+                return "redirect:/finance/dashboard";
+            case "ADMIN":
+                return "redirect:/admin/dashboard";
             default:
                 return "redirect:/customer/dashboard";
         }

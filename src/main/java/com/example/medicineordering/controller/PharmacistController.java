@@ -144,9 +144,17 @@ public class PharmacistController {
         }
         
         try {
+            // Check if medicine exists before attempting deletion
+            Medicine medicine = medicineRepository.findById(id);
+            if (medicine == null) {
+                ra.addFlashAttribute("error", "Medicine not found.");
+                return "redirect:/pharmacist/medicines";
+            }
+            
             medicineRepository.deleteById(id);
-            ra.addFlashAttribute("success", "Medicine deleted successfully.");
+            ra.addFlashAttribute("success", "Medicine '" + medicine.getName() + "' deleted successfully.");
         } catch (Exception e) {
+            System.err.println("Error deleting medicine with ID " + id + ": " + e.getMessage());
             ra.addFlashAttribute("error", "Error deleting medicine: " + e.getMessage());
         }
         

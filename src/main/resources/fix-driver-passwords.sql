@@ -14,3 +14,7 @@ WHERE passwordHash IS NULL OR passwordHash = '' OR passwordHash = 'NULL' OR pass
 
 -- Verify the update
 SELECT id, name, email, passwordHash FROM dbo.Drivers;
+
+
+
+

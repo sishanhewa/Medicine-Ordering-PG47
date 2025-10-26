@@ -28,12 +28,18 @@ public class DeliveryRepository {
     public void updateStatus(int deliveryId, String status, String notes) {
         jdbc.update("UPDATE Deliveries SET status = ?, notes = ? WHERE id = ?",
                 status, notes, deliveryId);
-        // Also sync the order's status when it reaches Delivered/Failed
+        // Also sync the order's status based on delivery status
         if ("delivered".equalsIgnoreCase(status)) {
             jdbc.update("UPDATE Orders SET status = 'Delivered' WHERE id = " +
                     "(SELECT orderId FROM Deliveries WHERE id = ?)", deliveryId);
         } else if ("failed".equalsIgnoreCase(status)) {
             jdbc.update("UPDATE Orders SET status = 'Failed' WHERE id = " +
+                    "(SELECT orderId FROM Deliveries WHERE id = ?)", deliveryId);
+        } else if ("assigned".equalsIgnoreCase(status)) {
+            jdbc.update("UPDATE Orders SET status = 'Assigned' WHERE id = " +
+                    "(SELECT orderId FROM Deliveries WHERE id = ?)", deliveryId);
+        } else if ("picked_up".equalsIgnoreCase(status) || "in_transit".equalsIgnoreCase(status)) {
+            jdbc.update("UPDATE Orders SET status = 'In Transit' WHERE id = " +
                     "(SELECT orderId FROM Deliveries WHERE id = ?)", deliveryId);
         }
     }
@@ -45,7 +51,7 @@ public class DeliveryRepository {
     }
 
     public List<Delivery> findActive() {
-        String sql = "SELECT * FROM Deliveries WHERE status IN ('Assigned','picked_up','in_transit')";
+        String sql = "SELECT * FROM Deliveries WHERE status IN ('Assigned','picked_up','in_transit','delivered')";
         return jdbc.query(sql, new BeanPropertyRowMapper<>(Delivery.class));
     }
 
