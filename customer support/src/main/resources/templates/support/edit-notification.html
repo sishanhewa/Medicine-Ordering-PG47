@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Notification</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1>Edit Notification</h1>
+    <div th:if="${notification}">
+        <form th:action="@{/support/notifications/{id}/update(id=${notification.id})}" th:object="${notification}" method="post">
+            <label for="type">Notification Type:</label>
+            <select id="type" th:field="*{type}" required>
+                <option value="order_status">Order Status</option>
+                <option value="delay">Delay</option>
+                <option value="general">General</option>
+            </select>
+            <label for="recipient">Recipient:</label>
+            <input type="text" id="recipient" th:field="*{recipient}" required>
+            <label for="content">Content:</label>
+            <textarea id="content" th:field="*{content}" required></textarea>
+            <button type="submit">Update Notification</button>
+        </form>
+    </div>
+    <div th:unless="${notification}">
+        <p>Notification not found.</p>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

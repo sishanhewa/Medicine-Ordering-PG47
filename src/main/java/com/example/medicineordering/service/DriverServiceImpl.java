@@ -53,6 +53,8 @@ public class DriverServiceImpl implements DriverService {
         String photoUrl=storage.save(photo,"pod");
         String sigUrl=sig!=null&&sig.length>0?storage.saveBytes(sig,"sig","png"):null;
         jdbc.update("UPDATE Deliveries SET status='delivered' WHERE id=?",deliveryId);
+        // Update the corresponding order status to 'Delivered'
+        jdbc.update("UPDATE Orders SET status='Delivered' WHERE id=(SELECT orderId FROM Deliveries WHERE id=?)",deliveryId);
         deliveryExtras.markCompleted(deliveryId);
         deliveryExtras.upsertProof(deliveryId,recipient,notes,photoUrl,sigUrl);
     }
@@ -61,6 +63,8 @@ public class DriverServiceImpl implements DriverService {
     public void reportIssue(int deliveryId,String type,String desc,MultipartFile photo,String action) throws Exception {
         String photoUrl=storage.save(photo,"issue");
         jdbc.update("UPDATE Deliveries SET status='failed' WHERE id=?",deliveryId);
+        // Update the corresponding order status to 'Failed'
+        jdbc.update("UPDATE Orders SET status='Failed' WHERE id=(SELECT orderId FROM Deliveries WHERE id=?)",deliveryId);
         deliveryExtras.insertIssue(deliveryId,type,desc,photoUrl,action);
     }
 

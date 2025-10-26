@@ -127,6 +127,44 @@ CREATE TABLE dbo.Prescriptions (
 );
 END
 
+-- Table 8: Messages (Customer Support)
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Messages' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+CREATE TABLE dbo.Messages (
+    id BIGINT IDENTITY PRIMARY KEY,
+    content NVARCHAR(MAX) NOT NULL,
+    sender NVARCHAR(255) NOT NULL,
+    receiver NVARCHAR(255) NOT NULL,
+    timestamp DATETIME2 DEFAULT GETDATE(),
+    status NVARCHAR(50) DEFAULT 'unread',
+    archived BIT DEFAULT 0
+);
+END
+
+-- Table 9: Notifications
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Notifications' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+CREATE TABLE dbo.Notifications (
+    id BIGINT IDENTITY PRIMARY KEY,
+    type NVARCHAR(100) NOT NULL,
+    content NVARCHAR(MAX) NOT NULL,
+    recipient NVARCHAR(255) NOT NULL,
+    timestamp DATETIME2 DEFAULT GETDATE()
+);
+END
+
+-- Table 10: Issues (Customer Support)
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Issues' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+CREATE TABLE dbo.Issues (
+    id BIGINT IDENTITY PRIMARY KEY,
+    status NVARCHAR(50) NOT NULL,
+    relatedMessageId BIGINT,
+    archived BIT DEFAULT 0,
+    createdAt DATETIME2 DEFAULT GETDATE()
+);
+END
+
 -- Table 8: OrderItems
 IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'OrderItems' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
@@ -166,6 +204,20 @@ CREATE TABLE dbo.Deliveries (
     assignedAt DATETIME2,
     pickedUpAt DATETIME2,
     deliveredAt DATETIME2,
+    notes NVARCHAR(500)
+);
+END
+
+-- Table 11: Payments (Finance Management)
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Payments' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+CREATE TABLE dbo.Payments (
+    id BIGINT IDENTITY PRIMARY KEY,
+    patientName NVARCHAR(100) NOT NULL,
+    medicineName NVARCHAR(100) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    status NVARCHAR(20) DEFAULT 'PENDING',
+    paymentDate DATETIME2 DEFAULT GETDATE(),
     notes NVARCHAR(500)
 );
 END

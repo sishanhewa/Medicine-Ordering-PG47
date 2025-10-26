@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard-card {
+            transition: transform 0.2s;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/admin/dashboard">
+            <i class="fas fa-shield-alt me-2"></i>Admin Portal
+        </a>
+        <div class="navbar-nav ms-auto">
+            <span class="navbar-text me-3">
+                Welcome, <span th:text="${user?.fullName ?: 'Admin'}">Admin</span>
+            </span>
+            <a class="nav-link" href="/logout">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <!-- Alerts -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold text-primary mb-4">Admin Dashboard</h1>
+            <p class="lead text-muted mb-5">Manage system users and roles</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Delivery Managers -->
+        <div class="col-md-4">
+            <div class="card dashboard-card text-center h-100">
+                <div class="card-body p-4">
+                    <div class="text-primary mb-3">
+                        <i class="fas fa-truck fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Delivery Managers</h5>
+                    <p class="card-text text-muted">Total: <span th:text="${deliveryCount}">0</span></p>
+                    <a th:href="@{/admin/users(role=DeliveryManager)}"
+                       class="btn btn-outline-primary btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pharmacists -->
+        <div class="col-md-4">
+            <div class="card dashboard-card text-center h-100">
+                <div class="card-body p-4">
+                    <div class="text-success mb-3">
+                        <i class="fas fa-pills fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Pharmacists</h5>
+                    <p class="card-text text-muted">Total: <span th:text="${pharmacistCount}">0</span></p>
+                    <a th:href="@{/admin/users(role=Pharmacist)}"
+                       class="btn btn-outline-success btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finance Managers -->
+        <div class="col-md-4">
+            <div class="card dashboard-card text-center h-100">
+                <div class="card-body p-4">
+                    <div class="text-warning mb-3">
+                        <i class="fas fa-chart-line fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Finance Managers</h5>
+                    <p class="card-text text-muted">Total: <span th:text="${financeCount}">0</span></p>
+                    <a th:href="@{/admin/users(role=FinanceManager)}"
+                       class="btn btn-outline-warning btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-3">
+        <!-- Customers -->
+        <div class="col-md-6">
+            <div class="card dashboard-card text-center h-100">
+                <div class="card-body p-4">
+                    <div class="text-info mb-3">
+                        <i class="fas fa-users fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Customers</h5>
+                    <p class="card-text text-muted">Total: <span th:text="${customerCount}">0</span></p>
+                    <a th:href="@{/admin/users(role=Customer)}"
+                       class="btn btn-outline-info btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Support -->
+        <div class="col-md-6">
+            <div class="card dashboard-card text-center h-100">
+                <div class="card-body p-4">
+                    <div class="text-dark mb-3">
+                        <i class="fas fa-headset fa-3x"></i>
+                    </div>
+                    <h5 class="card-title">Customer Support</h5>
+                    <p class="card-text text-muted">Total: <span th:text="${supportCount}">0</span></p>
+                    <a th:href="@{/admin/users(role=CustomerSupport)}"
+                       class="btn btn-outline-dark btn-sm">Manage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <a th:href="@{/admin/users}" class="btn btn-primary">
+                                <i class="fas fa-eye me-2"></i>View All Users
+                            </a>
+                        </div>
+                        <div class="col-auto">
+                            <a th:href="@{/admin/users/new(role=CUSTOMER)}" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>Add New User
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+</body>
+</html>

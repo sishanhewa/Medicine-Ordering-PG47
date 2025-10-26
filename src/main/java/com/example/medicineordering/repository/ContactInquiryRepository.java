@@ -72,3 +72,7 @@ public class ContactInquiryRepository {
         jdbc.update(sql, status, id);
     }
 }
+
+
+
+

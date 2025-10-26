@@ -15,6 +15,8 @@ import com.example.medicineordering.repository.OrderRepository;
 import com.example.medicineordering.repository.OrderItemRepository;
 import com.example.medicineordering.repository.CustomerRepository;
 import com.example.medicineordering.repository.ContactInquiryRepository;
+import com.example.medicineordering.service.NotificationService;
+import com.example.medicineordering.service.CustomerSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -48,6 +50,8 @@ public class CustomerController {
     private final OrderItemRepository orderItemRepository;
     private final ContactInquiryRepository contactInquiryRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final NotificationService notificationService;
+    private final CustomerSupportService customerSupportService;
 
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
@@ -56,7 +60,8 @@ public class CustomerController {
     public CustomerController(MedicineRepository medicineRepository, OrderRepository orderRepository,
                               CartRepository cartRepository, PrescriptionRepository prescriptionRepository,
                               CustomerRepository customerRepository, OrderItemRepository orderItemRepository,
-                              ContactInquiryRepository contactInquiryRepository, JdbcTemplate jdbcTemplate) {
+                              ContactInquiryRepository contactInquiryRepository, JdbcTemplate jdbcTemplate,
+                              NotificationService notificationService, CustomerSupportService customerSupportService) {
         this.medicineRepository = medicineRepository;
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
@@ -65,6 +70,8 @@ public class CustomerController {
         this.orderItemRepository = orderItemRepository;
         this.contactInquiryRepository = contactInquiryRepository;
         this.jdbcTemplate = jdbcTemplate;
+        this.notificationService = notificationService;
+        this.customerSupportService = customerSupportService;
     }
 
     /**
@@ -101,6 +108,14 @@ public class CustomerController {
         model.addAttribute("name", name == null ? "" : name);
         model.addAttribute("category", category == null ? "" : category);
         model.addAttribute("user", user);
+        
+        // Add notifications for logged-in users
+        if (user != null && user.isCustomer()) {
+            List<com.example.medicineordering.model.Notification> notifications = 
+                notificationService.getNotificationsByRecipient(user.getEmail());
+            model.addAttribute("notifications", notifications);
+        }
+        
         return "customer_dashboard";
     }
 
@@ -252,6 +267,7 @@ public class CustomerController {
     @PostMapping("/place-from-cart")
     public String placeFromCart(@RequestParam("customerName") String customerName,
                                 @RequestParam("deliveryAddress") String deliveryAddress,
+                                @RequestParam("deliveryWindow") String deliveryWindow,
                                 @RequestParam("paymentMethod") String paymentMethod,
                                 HttpSession session,
                                 RedirectAttributes ra) {
@@ -264,8 +280,8 @@ public class CustomerController {
         
         // Ensure Customer record exists for cart functionality
         ensureCustomerRecordExists(user);
-        if (!StringUtils.hasText(customerName) || !StringUtils.hasText(deliveryAddress)) {
-            ra.addFlashAttribute("error", "Name and address are required.");
+        if (!StringUtils.hasText(customerName) || !StringUtils.hasText(deliveryAddress) || !StringUtils.hasText(deliveryWindow)) {
+            ra.addFlashAttribute("error", "Name, address, and delivery time are required.");
             return "redirect:/customer/cart";
         }
         
@@ -293,6 +309,7 @@ public class CustomerController {
             // SECURITY FIX: Always use the logged-in user's name, not form input
             order.setCustomerName(user.getFullName());
             order.setDeliveryAddress(deliveryAddress);
+            order.setDeliveryWindow(deliveryWindow);
             order.setStatus("Pending");
             order.setWeight(totalWeight);
             
@@ -834,15 +851,14 @@ public class CustomerController {
      * Show contact us page
      */
     @GetMapping("/contact")
-    public String contactUs(Model model, HttpSession session) {
-        // Pre-fill form with customer data if logged in
+    public String contactUs(HttpSession session, RedirectAttributes ra) {
+        // Redirect to the unified support & contact page
         User user = (User) session.getAttribute("user");
-        if (user != null && user.isCustomer()) {
-            model.addAttribute("customerName", user.getFullName());
-            model.addAttribute("customerEmail", user.getEmail());
-            model.addAttribute("customerPhone", user.getPhone() != null ? user.getPhone() : "+94 77 123 4567");
+        if (user == null || !user.isCustomer()) {
+            ra.addFlashAttribute("error", "Please login first.");
+            return "redirect:/login";
         }
-        return "customer_contact";
+        return "redirect:/customer/support";
     }
     
     /**
@@ -959,37 +975,10 @@ public class CustomerController {
     }
 
     @PostMapping("/contact")
-    public String submitContact(@RequestParam("customerName") String customerName,
-                               @RequestParam("customerEmail") String customerEmail,
-                               @RequestParam("customerPhone") String customerPhone,
-                               @RequestParam("subject") String subject,
-                               @RequestParam("message") String message,
-                               @RequestParam("priority") String priority,
-                               RedirectAttributes ra) {
-        try {
-            // Validate required fields
-            if (!StringUtils.hasText(customerName) || !StringUtils.hasText(customerEmail) || 
-                !StringUtils.hasText(subject) || !StringUtils.hasText(message)) {
-                ra.addFlashAttribute("error", "Please fill in all required fields.");
-                return "redirect:/customer/contact";
-            }
-            
-            // Create inquiry
-            ContactInquiry inquiry = new ContactInquiry(customerName, customerEmail, customerPhone, 
-                                                       subject, message, priority);
-            
-            // Save to database
-            contactInquiryRepository.save(inquiry);
-            
-            ra.addFlashAttribute("success", "Your inquiry has been submitted successfully! We'll get back to you soon.");
-            return "redirect:/customer/contact";
-            
-        } catch (Exception e) {
-            System.err.println("Error submitting contact inquiry: " + e.getMessage());
-            e.printStackTrace();
-            ra.addFlashAttribute("error", "Failed to submit inquiry. Please try again.");
-            return "redirect:/customer/contact";
-        }
+    public String submitContact(RedirectAttributes ra) {
+        // Redirect to the unified support & contact page
+        ra.addFlashAttribute("info", "Please use the Support & Contact page to send us a message.");
+        return "redirect:/customer/support";
     }
     
     // Simple test endpoint to verify Customer record creation
@@ -1167,5 +1156,141 @@ public class CustomerController {
         }
         
         return "redirect:/customer/prescriptions";
+    }
+
+    // Customer Support endpoints
+    @GetMapping("/support")
+    public String customerSupport(HttpSession session, Model model, RedirectAttributes ra) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.isCustomer()) {
+            ra.addFlashAttribute("error", "Please login first.");
+            return "redirect:/login";
+        }
+
+        // Get customer's conversations
+        List<com.example.medicineordering.model.Message> conversations = 
+            customerSupportService.getConversationsBySender(user.getEmail());
+        model.addAttribute("conversations", conversations);
+        model.addAttribute("user", user);
+        return "customer_support";
+    }
+
+    @PostMapping("/support/send")
+    public String sendSupportMessage(@RequestParam("content") String content,
+                                   HttpSession session, RedirectAttributes ra) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.isCustomer()) {
+            ra.addFlashAttribute("error", "Please login first.");
+            return "redirect:/login";
+        }
+
+        if (content == null || content.trim().isEmpty()) {
+            ra.addFlashAttribute("error", "Message content cannot be empty.");
+            return "redirect:/customer/support";
+        }
+
+        try {
+            com.example.medicineordering.model.Message message = new com.example.medicineordering.model.Message();
+            message.setContent(content.trim());
+            message.setSender(user.getEmail());
+            message.setReceiver("support@crystalcare.com");
+            message.setTimestamp(java.time.LocalDateTime.now());
+            message.setStatus("unread");
+            message.setArchived(false);
+            // conversationId and parentMessageId will be set automatically by saveWithConversation
+
+            customerSupportService.saveMessageWithConversation(message);
+            ra.addFlashAttribute("success", "Your message has been sent to customer support. We'll get back to you soon!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Error sending message: " + e.getMessage());
+        }
+
+        return "redirect:/customer/support";
+    }
+
+    // Notifications endpoint
+    @GetMapping("/notifications")
+    public String notifications(HttpSession session, Model model, RedirectAttributes ra) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.isCustomer()) {
+            ra.addFlashAttribute("error", "Please login first.");
+            return "redirect:/login";
+        }
+
+        try {
+            // Get customer's notifications
+            List<com.example.medicineordering.model.Notification> notifications =
+                notificationService.getNotificationsByRecipient(user.getEmail());
+            model.addAttribute("notifications", notifications);
+        } catch (Exception e) {
+            System.err.println("Error loading notifications: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("notifications", new java.util.ArrayList<>());
+            model.addAttribute("error", "Could not load notifications. Please try again later.");
+        }
+
+        return "customer_notifications";
+    }
+
+    // Conversation endpoints
+    @GetMapping("/support/conversation/{conversationId}")
+    public String viewConversation(@PathVariable Long conversationId, HttpSession session, Model model, RedirectAttributes ra) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.isCustomer()) {
+            ra.addFlashAttribute("error", "Please login first.");
+            return "redirect:/login";
+        }
+
+        try {
+            // Get conversation messages
+            List<com.example.medicineordering.model.Message> messages = 
+                customerSupportService.getConversationMessages(conversationId);
+            model.addAttribute("messages", messages);
+            model.addAttribute("conversationId", conversationId);
+        } catch (Exception e) {
+            System.err.println("Error loading conversation: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("messages", new java.util.ArrayList<>());
+            model.addAttribute("error", "Could not load conversation. Please try again later.");
+        }
+
+        return "customer_conversation";
+    }
+
+    @PostMapping("/support/reply")
+    public String replyToMessage(@RequestParam("parentMessageId") Long parentMessageId,
+                                @RequestParam("content") String content,
+                                HttpSession session, RedirectAttributes ra) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.isCustomer()) {
+            ra.addFlashAttribute("error", "Please login first.");
+            return "redirect:/login";
+        }
+
+        if (content == null || content.trim().isEmpty()) {
+            ra.addFlashAttribute("error", "Reply content cannot be empty.");
+            return "redirect:/customer/support";
+        }
+
+        try {
+            // Get the parent message to find conversation ID
+            com.example.medicineordering.model.Message parentMessage = 
+                customerSupportService.getMessageById(parentMessageId);
+            if (parentMessage == null) {
+                ra.addFlashAttribute("error", "Original message not found.");
+                return "redirect:/customer/support";
+            }
+
+            // Create reply
+            customerSupportService.replyToMessage(parentMessageId, content.trim(), 
+                user.getEmail(), "support@crystalcare.com");
+            ra.addFlashAttribute("success", "Your reply has been sent to customer support!");
+        } catch (Exception e) {
+            System.err.println("Error sending reply: " + e.getMessage());
+            e.printStackTrace();
+            ra.addFlashAttribute("error", "Error sending reply: " + e.getMessage());
+        }
+
+        return "redirect:/customer/support";
     }
 }

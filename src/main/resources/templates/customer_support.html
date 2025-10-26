@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support & Contact - Crystal Care</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .support-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .message-card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        .message-card .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-unread {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+        .status-read {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .send-message-card {
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="support-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="mb-2">
+                            <i class="fas fa-headset me-3"></i>
+                            Support & Contact
+                        </h1>
+                        <p class="mb-0 opacity-75">Get help with your orders, contact us, and manage your support requests</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="/customer/dashboard" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Alerts -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row">
+                <!-- Send Message Form -->
+                <div class="col-md-6">
+                    <div class="card message-card send-message-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-paper-plane me-2"></i>Send Message to Support
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/customer/support/send}" method="post">
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Your Message</label>
+                                    <textarea class="form-control" id="content" name="content" rows="5" 
+                                              placeholder="Describe your issue or question..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message History -->
+                <div class="col-md-6">
+                    <div class="card message-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-comments me-2"></i>Your Conversations
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${conversations == null or conversations.isEmpty()}" class="text-center py-4">
+                                <i class="fas fa-comments text-muted" style="font-size: 3rem;"></i>
+                                <p class="text-muted mt-3">No conversations yet</p>
+                                <p class="text-muted small">Start a conversation with customer support</p>
+                            </div>
+                            <div th:each="conversation : ${conversations}" class="conversation-item mb-3 p-3 border rounded">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="status-badge status-unread" th:if="${conversation.status == 'unread'}" th:text="${conversation.status}">unread</span>
+                                        <span class="status-badge status-read" th:if="${conversation.status == 'read'}" th:text="${conversation.status}">read</span>
+                                        <small class="text-muted ms-2" th:text="${#temporals.format(conversation.timestamp, 'dd/MM/yyyy HH:mm')}">21/10/2024 14:30</small>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{'/customer/support/conversation/' + ${conversation.conversationId}}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                        <a th:href="@{'/customer/support/conversation/' + ${conversation.conversationId}}" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-reply me-1"></i>Reply
+                                        </a>
+                                    </div>
+                                </div>
+                                <p class="mb-0" th:text="${conversation.content}">Your message content here...</p>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-comments me-1"></i>
+                                        Conversation #<span th:text="${conversation.conversationId}">123</span>
+                                        <span class="ms-3">
+                                            <i class="fas fa-clock me-1"></i>
+                                            <span th:text="${#temporals.format(conversation.timestamp, 'dd/MM/yyyy HH:mm')}">21/10/2024 14:30</span>
+                                        </span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-info-circle me-2"></i>Support Information
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6><i class="fas fa-clock me-2"></i>Response Time</h6>
+                                    <p class="text-muted">We typically respond within 24 hours during business days.</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6><i class="fas fa-phone me-2"></i>Emergency Contact</h6>
+                                    <p class="text-muted">For urgent matters, call us at +94 77 123 4567</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6><i class="fas fa-envelope me-2"></i>Email Support</h6>
+                                    <p class="text-muted">You can also email us at support@crystalcare.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

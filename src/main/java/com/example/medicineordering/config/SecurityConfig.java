@@ -33,6 +33,12 @@ public class SecurityConfig {
                 .requestMatchers("/manager/**", "/driver/**", "/admin/**").permitAll()
                 // Allow access to pharmacist pages (we handle auth manually in controllers)
                 .requestMatchers("/pharmacist/**").permitAll()
+                // Allow access to customer support pages (we handle auth manually in controllers)
+                .requestMatchers("/support/**").permitAll()
+                // Allow access to finance pages (we handle auth manually in controllers)
+                .requestMatchers("/finance/**").permitAll()
+                // Allow access to pattern demo pages
+                .requestMatchers("/pattern-demo/**").permitAll()
                 // Allow access to customer pages (we handle auth manually in controllers)
                 .requestMatchers("/customer/**").permitAll()
                 // Allow all other requests

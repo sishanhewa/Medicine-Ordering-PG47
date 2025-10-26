@@ -137,6 +137,21 @@
             color: #1e40af;
         }
         
+        .status-assigned {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-in-transit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
         .order-detail {
             background: #f8fafc;
             border-radius: 0.5rem;
@@ -386,7 +401,7 @@
                         <h3 class="mb-1">Order #<span th:text="${order.orderNumber}"></span></h3>
                         <p class="text-muted mb-0">Order ID: <span th:text="${order.id}"></span></p>
                     </div>
-                    <span class="status-badge status-pending" th:text="${order.status}"></span>
+                    <span class="status-badge" th:classappend="${'status-' + #strings.toLowerCase(order.status).replace(' ', '-')}" th:text="${order.status}"></span>
                 </div>
                 
                 <div class="row g-4">

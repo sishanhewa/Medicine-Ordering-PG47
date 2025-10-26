@@ -87,3 +87,6 @@ public class Medicine {
         this.imageUrl = imageUrl;
     }
 }
+
+
+

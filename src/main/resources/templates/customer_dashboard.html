@@ -1011,8 +1011,11 @@
             <a th:href="@{/customer/cart}" class="btn btn-outline-light btn-sm">
                 <i class="fas fa-shopping-cart me-1"></i>View Cart
             </a>
-            <a th:href="@{/customer/contact}" class="btn btn-outline-light btn-sm">
-                <i class="fas fa-envelope me-1"></i>Contact Us
+            <a th:href="@{/customer/support}" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-headset me-1"></i>Support & Contact
+            </a>
+            <a th:href="@{/customer/notifications}" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-bell me-1"></i>Notifications
             </a>
             <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm">
                 <i class="fas fa-sign-out-alt me-1"></i>Logout
@@ -1061,6 +1064,7 @@
         <span th:text="${success}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+
 
     <!-- Category Filter -->
     <div class="category-filter">

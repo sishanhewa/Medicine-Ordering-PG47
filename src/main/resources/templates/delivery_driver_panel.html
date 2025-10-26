@@ -38,6 +38,31 @@
             align-items: center;
             gap: 10px;
         }
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .logout-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
         .toggle-switch {
             position: relative;
             width: 50px;
@@ -172,13 +197,18 @@
                 </div>
             </div>
             <div class="col-md-6 text-end">
-                <div class="status-toggle">
-                    <span>Status:</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="availabilityToggle" th:checked="${isAvailable}" onchange="toggleAvailability()">
-                        <span class="slider"></span>
-                    </label>
-                    <span id="statusText" th:text="${isAvailable ? 'Available' : 'Unavailable'}">Available</span>
+                <div class="d-flex justify-content-end align-items-center gap-3">
+                    <div class="status-toggle">
+                        <span>Status:</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="availabilityToggle" th:checked="${isAvailable}" onchange="toggleAvailability()">
+                            <span class="slider"></span>
+                        </label>
+                        <span id="statusText" th:text="${isAvailable ? 'Available' : 'Unavailable'}">Available</span>
+                    </div>
+                    <a href="/logout" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
                 </div>
                 <div class="mt-2">
                     <small><i class="fas fa-clock me-1"></i>Shift: <span th:text="${shiftTime}">8:00 AM - 5:00 PM</span></small>
@@ -257,9 +287,6 @@
                                 <div class="d-flex gap-2 flex-wrap">
                                     <button class="btn btn-primary action-btn" th:data-delivery-id="${delivery.id}" onclick="startDelivery(this.dataset.deliveryId)">
                                         <i class="fas fa-play me-1"></i> Start Delivery
-                                    </button>
-                                    <button class="btn btn-outline-info action-btn" th:data-delivery-id="${delivery.id}" onclick="viewRoute(this.dataset.deliveryId)">
-                                        <i class="fas fa-route me-1"></i> View Route
                                     </button>
                                     <button class="btn btn-outline-secondary action-btn" th:data-phone="${delivery.customerPhone}" onclick="callCustomer(this.dataset.phone)">
                                         <i class="fas fa-phone me-1"></i> Call
@@ -516,10 +543,6 @@
         modal.show();
     }
 
-    // View Route
-    function viewRoute(deliveryId) {
-        window.open('/driver/route/' + deliveryId, '_blank');
-    }
 
     // Call Customer
     function callCustomer(phone) {

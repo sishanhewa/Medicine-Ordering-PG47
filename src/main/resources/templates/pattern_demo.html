@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Patterns Demo - Medicine Ordering System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .pattern-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .pattern-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem 1rem 0 0;
+            text-align: center;
+        }
+        
+        .strategy-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0.5rem;
+        }
+        
+        .singleton-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .log-entry {
+            background: #f5f5f5;
+            border-left: 3px solid #4caf50;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .config-item:last-child {
+            border-bottom: none;
+        }
+        
+        .config-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .config-value {
+            color: #666;
+        }
+        
+        .demo-nav {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <!-- Navigation -->
+        <div class="demo-nav text-center">
+            <h2 class="text-white mb-3">Design Patterns Demonstration</h2>
+            <a th:href="@{/pattern-demo/authentication}">Authentication Strategy</a>
+            <a th:href="@{/pattern-demo/order-status}">Order Status Strategy</a>
+            <a th:href="@{/pattern-demo/configuration}">Configuration Singleton</a>
+            <a th:href="@{/pattern-demo/logging}">Logging Singleton</a>
+            <a th:href="@{/pattern-demo/integration}">Pattern Integration</a>
+        </div>
+        
+        <!-- Main Demo Card -->
+        <div class="pattern-card">
+            <div class="pattern-header">
+                <h3 th:text="${demoTitle}">Design Pattern Demo</h3>
+                <p th:text="${patternDescription}" class="mb-0">Pattern description will appear here</p>
+            </div>
+            
+            <div class="p-4">
+                <!-- Strategy Pattern Demo -->
+                <div th:if="${strategies}" class="mb-4">
+                    <h4 class="text-primary mb-3">
+                        <i class="fas fa-cogs me-2"></i>Strategy Pattern Implementation
+                    </h4>
+                    <div th:each="strategy : ${strategies}" class="strategy-item">
+                        <h6 th:text="${strategy.strategyName}" class="mb-2">Strategy Name</h6>
+                        <p class="mb-1">
+                            <strong>Class:</strong> <span th:text="${strategy.class.simpleName}">StrategyClass</span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Supports:</strong> 
+                            <span th:if="${strategy.supportsRole != null}">
+                                Role-based authentication
+                            </span>
+                            <span th:if="${strategy.supportsStatus != null}">
+                                Status-based processing
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Singleton Pattern Demo -->
+                <div th:if="${config}" class="mb-4">
+                    <h4 class="text-primary mb-3">
+                        <i class="fas fa-database me-2"></i>Singleton Pattern - Application Configuration
+                    </h4>
+                    <div class="singleton-info">
+                        <h6>Configuration Summary:</h6>
+                        <p th:text="${configSummary}" class="mb-3"></p>
+                        
+                        <div class="config-item">
+                            <span class="config-label">Application Name:</span>
+                            <span class="config-value" th:text="${config.applicationName}">App Name</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Version:</span>
+                            <span class="config-value" th:text="${config.applicationVersion}">1.0.0</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Environment:</span>
+                            <span class="config-value" th:text="${config.environment}">development</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Server Port:</span>
+                            <span class="config-value" th:text="${config.serverPort}">8080</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Database URL:</span>
+                            <span class="config-value" th:text="${config.databaseUrl}">Database URL</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Max File Size:</span>
+                            <span class="config-value" th:text="${config.maxFileSize}">10MB</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Session Timeout:</span>
+                            <span class="config-value" th:text="${config.sessionTimeoutMinutes + ' minutes'}">30 minutes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Logging Service Demo -->
+                <div th:if="${loggingService}" class="mb-4">
+                    <h4 class="text-primary mb-3">
+                        <i class="fas fa-file-alt me-2"></i>Singleton Pattern - Logging Service
+                    </h4>
+                    <div class="singleton-info">
+                        <div class="config-item">
+                            <span class="config-label">Total Log Entries:</span>
+                            <span class="config-value" th:text="${logCount}">0</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Service Status:</span>
+                            <span class="config-value text-success">Active</span>
+                        </div>
+                    </div>
+                    
+                    <h6 class="mt-3">Recent Log Entries:</h6>
+                    <div th:if="${recentLogs}" style="max-height: 300px; overflow-y: auto;">
+                        <div th:each="log : ${recentLogs}" class="log-entry">
+                            <strong th:text="${log.level}">INFO</strong> - 
+                            <span th:text="${log.message}">Log message</span> 
+                            <small class="text-muted">
+                                [<span th:text="${log.source}">Source</span>] 
+                                <span th:text="${#temporals.format(log.timestamp, 'HH:mm:ss')}">12:00:00</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Results -->
+                <div th:if="${testResult}" class="alert alert-info">
+                    <h6>Test Result:</h6>
+                    <p th:text="${testResult}">Test result will appear here</p>
+                    <div th:if="${user}">
+                        <strong>User Details:</strong>
+                        <ul>
+                            <li>ID: <span th:text="${user.id}">1</span></li>
+                            <li>Username: <span th:text="${user.username}">username</span></li>
+                            <li>Role: <span th:text="${user.role}">Role</span></li>
+                        </ul>
+                    </div>
+                    <div th:if="${order}">
+                        <strong>Order Details:</strong>
+                        <ul>
+                            <li>ID: <span th:text="${order.id}">1</span></li>
+                            <li>Status: <span th:text="${order.status}">Status</span></li>
+                        </ul>
+                    </div>
+                    <div th:if="${nextPossibleStatuses}">
+                        <strong>Next Possible Statuses:</strong>
+                        <span th:each="status, iterStat : ${nextPossibleStatuses}" 
+                              th:text="${status + (iterStat.last ? '' : ', ')}">Status</span>
+                    </div>
+                </div>
+                
+                <!-- Pattern Integration Demo -->
+                <div th:if="${authStrategies and orderStrategies}" class="mb-4">
+                    <h4 class="text-primary mb-3">
+                        <i class="fas fa-link me-2"></i>Pattern Integration
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Authentication Strategies:</h6>
+                            <div th:each="strategy : ${authStrategies}" class="strategy-item">
+                                <span th:text="${strategy.strategyName}">Strategy</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Order Status Strategies:</h6>
+                            <div th:each="strategy : ${orderStrategies}" class="strategy-item">
+                                <span th:text="${strategy.strategyName}">Strategy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Forms -->
+                <div class="mt-4">
+                    <h5 class="text-primary mb-3">Test the Patterns</h5>
+                    
+                    <!-- Authentication Test Form -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">Test Authentication Strategy</h6>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/pattern-demo/test-auth}" method="get" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" name="username" class="form-control" placeholder="Enter username">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" name="password" class="form-control" placeholder="Enter password">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Role</label>
+                                    <select name="role" class="form-select">
+                                        <option value="ADMIN">Admin</option>
+                                        <option value="Customer">Customer</option>
+                                        <option value="DeliveryManager">Manager</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Test Authentication</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Status Test Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Test Order Status Strategy</h6>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/pattern-demo/test-order-status}" method="get" class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Current Status</label>
+                                    <select name="currentStatus" class="form-select">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Assigned">Assigned</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">New Status</label>
+                                    <select name="newStatus" class="form-select">
+                                        <option value="Ready">Ready</option>
+                                        <option value="In Transit">In Transit</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Failed">Failed</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Test Status Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pattern Benefits -->
+        <div class="pattern-card">
+            <div class="p-4">
+                <h4 class="text-primary mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Pattern Benefits
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success">Strategy Pattern Benefits:</h6>
+                        <ul>
+                            <li>Easy to add new strategies without modifying existing code</li>
+                            <li>Eliminates conditional statements and switch cases</li>
+                            <li>Promotes code reusability and maintainability</li>
+                            <li>Allows runtime strategy selection</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success">Singleton Pattern Benefits:</h6>
+                        <ul>
+                            <li>Ensures only one instance exists throughout the application</li>
+                            <li>Provides global access point to shared resources</li>
+                            <li>Lazy initialization for better performance</li>
+                            <li>Thread-safe implementation for concurrent access</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Archived Messages</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1>Archived Messages</h1>
+
+    <div th:if="${archivedMessages == null or archivedMessages.isEmpty()}">
+        <p>No archived messages found.</p>
+    </div>
+
+    <div th:unless="${archivedMessages == null or archivedMessages.isEmpty()}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Sender</th>
+                <th>Content</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="message : ${archivedMessages}">
+                <td th:text="${message.id}"></td>
+                <td th:text="${message.sender}"></td>
+                <td th:text="${message.content}"></td>
+                <td th:text="${message.status}"></td>
+                <td th:text="${message.timestamp}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

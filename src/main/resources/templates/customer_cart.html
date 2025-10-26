@@ -423,6 +423,18 @@
                         <textarea class="form-control" name="deliveryAddress" rows="3" placeholder="Enter complete delivery address" required></textarea>
                     </div>
                     
+                    <!-- Delivery Window Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Preferred Delivery Time</label>
+                        <select class="form-select" name="deliveryWindow" required>
+                            <option value="">Select delivery time</option>
+                            <option value="Morning (9:00 AM - 12:00 PM)">Morning (9:00 AM - 12:00 PM)</option>
+                            <option value="Afternoon (12:00 PM - 3:00 PM)">Afternoon (12:00 PM - 3:00 PM)</option>
+                            <option value="Evening (3:00 PM - 6:00 PM)">Evening (3:00 PM - 6:00 PM)</option>
+                            <option value="Night (6:00 PM - 9:00 PM)">Night (6:00 PM - 9:00 PM)</option>
+                        </select>
+                    </div>
+                    
                     <!-- Payment Method Selection -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">Payment Method</label>

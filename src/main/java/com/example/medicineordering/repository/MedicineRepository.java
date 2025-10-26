@@ -143,9 +143,27 @@ public class MedicineRepository {
     
     /**
      * Delete a medicine by ID (for pharmacist operations)
+     * First deletes all related OrderItems to avoid foreign key constraint violations
      */
     public void deleteById(Integer id) {
-        String sql = "DELETE FROM dbo.Medicines WHERE id = ?";
-        jdbc.update(sql, id);
+        try {
+            // First, delete all OrderItems that reference this medicine
+            String deleteOrderItemsSql = "DELETE FROM dbo.OrderItems WHERE medicineId = ?";
+            int deletedOrderItems = jdbc.update(deleteOrderItemsSql, id);
+            
+            // Then delete the medicine
+            String deleteMedicineSql = "DELETE FROM dbo.Medicines WHERE id = ?";
+            int deletedMedicines = jdbc.update(deleteMedicineSql, id);
+            
+            if (deletedMedicines == 0) {
+                throw new RuntimeException("Medicine with ID " + id + " not found or could not be deleted");
+            }
+            
+            System.out.println("Deleted " + deletedOrderItems + " order items and " + deletedMedicines + " medicine(s)");
+            
+        } catch (Exception e) {
+            System.err.println("Error deleting medicine with ID " + id + ": " + e.getMessage());
+            throw new RuntimeException("Failed to delete medicine: " + e.getMessage(), e);
+        }
     }
 }
